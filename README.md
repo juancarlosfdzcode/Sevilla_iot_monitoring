@@ -66,9 +66,12 @@ bashdocker --version          # Debería mostrar >= 20.0
 docker compose version    # Debería mostrar >= 2.0
 ```
 
-🚀 Instalación Ultra-Rápida
-1. Clonar y ejecutar
-bash# Clonar repositorio
+## 🚀 Instalación Ultra-Rápida.
+
+**1. Clonar y ejecutar.**
+
+```bash
+# Clonar repositorio
 git clone https://github.com/tu-usuario/sevilla-iot-monitoring.git
 cd sevilla-iot-monitoring
 
@@ -77,7 +80,9 @@ docker compose up -d
 
 # Inicializar base de datos (solo primera vez)
 docker compose up clickhouse-init
-2. ¡Listo! Acceder al dashboard
+```
+
+**2. ¡Listo! Acceder al dashboard.**
 
 📊 Dashboard Principal: http://localhost:5000
 📡 API en tiempo real: http://localhost:5000/api/live-data
@@ -86,12 +91,26 @@ docker compose up clickhouse-init
 
 ⏱️ Nota: El sistema tarda ~3 minutos en estar completamente operativo debido a los tiempos de inicialización de Kafka.
 
-🎯 Servicios Incluidos
+## 🎯 Servicios Incluidos.
+
 El sistema incluye 6 servicios automáticos:
-ServicioDescripciónPuertosensors4 sensores IoT generando datos-kafka + zookeeperStreaming de datos en tiempo real9092kafka-consumerProcesamiento ETL automático-clickhouseBase de datos analítica8123, 9000dashboardInterface web con visualización5000clickhouse-initInicializador de BD (ejecuta una vez)-
-🛠️ Comandos Útiles
-Gestión del Sistema
-bash# Ver estado de todos los servicios
+
+| Servicio | Descripción | Puerto |
+|----------|----------|----------|
+| sensors | 4 sensores IoT generando datos | - |
+| kafka + zookeeper | Streaming de datos en tiempo real | 9092 |
+| kafka-consumer | Procesamiento ETL automático | - |
+| clickhouse | Base de datos analítica | 8123, 9000 |
+| dashboard | Interfaz web con visualización | 5000 |
+| clickhouse-init | Inicializador de BD (ejecuta una vez) | - |
+
+## 🛠️ Comandos Útiles.
+
+#### Gestión del Sistema.
+
+```bash
+
+# Ver estado de todos los servicios
 docker compose ps
 
 # Ver logs de un servicio específico
@@ -109,8 +128,13 @@ docker compose down
 # Limpiar todo (incluyendo datos)
 docker compose down -v
 docker system prune -f
-Verificación de Datos
-bash# Ver datos en Kafka en tiempo real
+```
+
+#### Verificación de Datos.
+
+```bash
+
+# Ver datos en Kafka en tiempo real
 docker exec kafka kafka-console-consumer --bootstrap-server kafka:29092 --topic sevilla-sensors --from-beginning
 
 # Conectar a ClickHouse y consultar datos
@@ -122,35 +146,59 @@ SELECT COUNT(*) FROM sensor_data;
 SELECT * FROM sensor_data ORDER BY timestamp DESC LIMIT 10;
 ```
 
-## 📁 Estructura del Proyecto
+## 📁 Estructura del Proyecto.
+
 ```
 sevilla-iot-monitoring/
-├── 📂 src/
-│   ├── 🔌 sensor_kafka.py           # Sensores IoT con Kafka
-│   ├── 🔗 kafka_to_clickhouse.py    # Consumer automático Kafka→ClickHouse  
-│   ├── 📊 dashboard.py              # Dashboard web Flask
-│   └── ⚙️ init_database.py          # Inicializador ClickHouse
-├── 📂 templates/
-│   └── 🎨 dashboard.html            # Template del dashboard web
-├── 📂 data/                         # Datos generados (git ignored)
-├── 🐳 docker-compose.yml            # Orquestación completa de servicios
-├── 🐳 Dockerfile                    # Imagen base de Python
-├── 📋 requirements.txt              # Dependencias Python
-├── 🚫 .gitignore                    # Archivos ignorados por Git
-└── 📖 README.md                     # Este archivo
-🔧 Configuración
-Variables de Entorno (Automáticas)
-VariableDescripciónValor configuradoKAFKA_BROKERServidor Kafka internokafka:29092TOPIC_NAMENombre del topicsevilla-sensorsSENSOR_INTERVALIntervalo entre lecturas10 segundosCLICKHOUSE_HOSTHost de ClickHouse internoclickhouseCLICKHOUSE_USERUsuario ClickHouseadminCLICKHOUSE_PASSWORDPassword ClickHouseadmin123
-Puertos Utilizados
-ServicioPuertoDescripciónDashboard5000Interface web principalKafka9092Puerto para productores/consumidoresClickHouse HTTP8123Interface HTTP de ClickHouseClickHouse Native9000Cliente nativo de ClickHouseZookeeper2181Coordinación de Kafka
-📈 API Endpoints
-Dashboard Web
+├── src/
+│   ├── sensor_kafka.py           # Sensores IoT con Kafka
+│   ├── kafka_to_clickhouse.py    # Consumer automático Kafka→ClickHouse  
+│   ├── dashboard.py              # Dashboard web Flask
+│   └── init_database.py          # Inicializador ClickHouse
+├── templates/
+│   └── dashboard.html            # Template del dashboard web
+├── data/                         # Datos generados (git ignored)
+├── docker-compose.yml            # Orquestación completa de servicios
+├── Dockerfile                    # Imagen base de Python
+├── requirements.txt              # Dependencias Python
+├── .gitignore                    # Archivos ignorados por Git
+└── README.md                     # Este archivo
+```
 
-GET / - Dashboard principal con visualización en tiempo real
-GET /health - Health check del servicio
-GET /api/live-data - Datos en tiempo real (JSON)
+## 🔧 Configuración.
 
-Ejemplo de respuesta API:
+#### Variables de Entorno (Automáticas).
+
+| Variable | Descripción | Valor configurado |
+| --- | --- | --- |
+| KAFKA_BROKER | Servidor Kafka interno | kafka:29092 |
+| TOPIC_NAME | Nombre del topic | sevilla-sensors |
+| SENSOR_INTERVAL | Intervalo entre lecturas | 10 segundos |
+| CLICKHOUSE_HOST | Host de ClickHouse interno | clickhouse |
+| CLICKHOUSE_USER | Usuario ClickHouse | admin |
+| CLICKHOUSE_PASSWORD | Password ClickHouse | admin123 |
+
+#### Puertos Utilizados.
+
+| Servicio | Puerto | Descripción |
+| --- | --- | --- |
+| Dashboard | 5000 | Interface web principal |
+| Kafka | 9092 | Puerto para productores/consumidores |
+| ClickHouse HTTP | 8123 | Interface HTTP de ClickHouse |
+| ClickHouse Native | 9000 | Cliente nativo de ClickHouse |
+| Zookeeper | 2181 | Coordinación de Kafka |
+
+## 📈 API Endpoints.
+
+##### Dashboard Web.
+
+* `GET /` - Dashboard principal con visualización en tiempo real
+* `GET /health` - Health check del servicio
+* `GET /api/live-data` - Datos en tiempo real (JSON)
+
+##### Ejemplo de respuesta API:
+
+```
 json{
   "stats": {
     "total_readings": 2450,
@@ -169,23 +217,34 @@ json{
   },
   "timestamp": "14:30:15"
 }
-🐛 Troubleshooting
-Problemas Comunes
-❌ Error: "Connection refused" al iniciar
-bash# Verificar que Docker está funcionando
+```
+
+## 🐛 Troubleshooting.
+
+##### Problemas Comunes.
+
+**Error: "Connection refused" al iniciar.**
+```bash
+# Verificar que Docker está funcionando
 docker ps
 
 # Reiniciar servicios
 docker compose down
 docker compose up -d
-❌ Dashboard no carga (Puerto 5000 en uso)
-bash# Verificar qué usa el puerto
+```
+
+**Dashboard no carga (Puerto 5000 en uso).**
+```bash
+# Verificar qué usa el puerto
 lsof -i :5000
 
 # Cerrar proceso que use el puerto y reiniciar
 docker compose restart dashboard
-❌ No se ven datos nuevos en el dashboard
-bash# Verificar que todos los servicios están corriendo
+```
+
+**No se ven datos nuevos en el dashboard.**
+```bash
+# Verificar que todos los servicios están corriendo
 docker compose ps
 
 # Verificar logs del consumer
@@ -193,12 +252,18 @@ docker compose logs kafka-consumer
 
 # Verificar datos en ClickHouse
 docker exec -it clickhouse clickhouse-client --user admin --password admin123 --query "SELECT COUNT(*) FROM sensors_db.sensor_data"
-❌ Error "NoBrokersAvailable"
-bash# Kafka necesita más tiempo para inicializar
+```
+
+**Error "NoBrokersAvailable".**
+```bash
+# Kafka necesita más tiempo para inicializar
 # Esperar 3-5 minutos y verificar logs:
 docker compose logs kafka
-Comandos de Diagnóstico Completo
-bash# Diagnóstico automático del sistema
+```
+
+##### Comandos de Diagnóstico Completo.
+```bash
+# Diagnóstico automático del sistema
 echo "=== ESTADO SERVICIOS ==="
 docker compose ps
 
@@ -213,9 +278,14 @@ docker exec clickhouse clickhouse-client --user admin --password admin123 --quer
 
 echo "=== API DASHBOARD ==="
 curl -s http://localhost:5000/health | jq
-🧪 Testing
-Tests de Conectividad
-bash# 1. Test servicios básicos
+```
+
+## 🧪 Testing.
+
+##### Tests de Conectividad.
+
+```bash
+# 1. Test servicios básicos
 curl http://localhost:8123/ping  # ClickHouse: debería devolver "Ok"
 curl http://localhost:5000/health  # Dashboard: debería devolver JSON
 
@@ -224,64 +294,57 @@ docker exec kafka kafka-topics --list --bootstrap-server kafka:29092  # Debería
 
 # 3. Test de flujo completo
 curl http://localhost:5000/api/live-data | jq '.stats.total_readings'  # Debería mostrar número > 0
-Datos de Prueba Automáticos
+```
+
+##### Datos de Prueba Automáticos.
+
 El sistema genera automáticamente datos realistas para Sevilla:
 
-Centro Histórico: Temperaturas más altas, más ruido urbano
-Triana: Humedad más alta (proximidad al río Guadalquivir)
-Parque María Luisa: Temperaturas más frescas, menos ruido
-Nervión: Características urbanas intermedias
+* Centro Histórico: Temperaturas más altas, más ruido urbano.
+* Triana: Humedad más alta (proximidad al río Guadalquivir).
+* Parque María Luisa: Temperaturas más frescas, menos ruido.
+* Nervión: Características urbanas intermedias.
 
-🚀 Tecnologías Utilizadas
-Backend & Data Engineering
+## 🚀 Tecnologías Utilizadas.
 
-Python 3.11 - Lenguaje principal
-Apache Kafka - Streaming de datos en tiempo real
-ClickHouse - Base de datos analítica columnar
-Flask - Framework web para dashboard y API
+##### Backend & Data Engineering.
 
-DevOps & Infraestructura
+* Python 3.11 - Lenguaje principal.
+* Apache Kafka - Streaming de datos en tiempo real.
+* ClickHouse - Base de datos analítica columnar.
+* Flask - Framework web para dashboard y API.
 
-Docker & Docker Compose - Containerización y orquestación
-Zookeeper - Coordinación de Kafka
+##### DevOps & Infraestructura.
 
-Frontend & Visualización
+* Docker & Docker Compose - Containerización y orquestación.
+* Zookeeper - Coordinación de Kafka.
 
-HTML5 + CSS3 - Dashboard web responsive
-JavaScript - Auto-refresh y interactividad en tiempo real
+##### Frontend & Visualización.
 
-🌟 Características Avanzadas
+* HTML5 + CSS3 - Dashboard web responsive.
+* JavaScript - Auto-refresh y interactividad en tiempo real.
 
-Auto-healing: Servicios se reinician automáticamente en caso de fallo
-Scalable: Arquitectura preparada para múltiples instancias
-Real-time: Dashboard se actualiza automáticamente cada 15 segundos
-Enterprise-ready: Logs estructurados, health checks, métricas
-Development-friendly: Sistema completo en desarrollo local
+## 🌟 Características Avanzadas.
 
-🤝 Contribución
+* Escalable: Arquitectura preparada para múltiples instancias.
+* Real-time: Dashboard se actualiza automáticamente cada 15 segundos.
+* Enterprise-ready: Logs estructurados, health checks, métricas.
+* Development-friendly: Sistema completo en desarrollo local.
 
-Fork del proyecto
-Crear rama para feature (git checkout -b feature/nueva-funcionalidad)
-Commit de cambios (git commit -am 'Añadir nueva funcionalidad')
-Push a la rama (git push origin feature/nueva-funcionalidad)
-Crear Pull Request
+## 🤝 Contribución.
 
-📄 Licencia
-Este proyecto está bajo la Licencia MIT. Ver LICENSE para más detalles.
-👨‍💻 Autor
-Juan Carlos - Analytics Engineer
+* Fork del proyecto.
+* Crear rama para feature (`git checkout -b feature/nueva-funcionalidad`).
+* Commit de cambios (`git commit -am 'Añadir nueva funcionalidad'`).
+* Push a la rama (`git push origin feature/nueva-funcionalidad`).
+* Crear Pull Request-
 
-📧 Email: [tu-email@example.com]
-💼 LinkedIn: [tu-perfil-linkedin]
-🐙 GitHub: [tu-usuario-github]
+## 👨‍💻 Autor.
 
-🙏 Agradecimientos
+Juan Carlos - Analytics Engineer.
 
-Ciudad de Sevilla por la inspiración
-Comunidad de Apache Kafka
-Documentación de ClickHouse
-Proyecto Flask
+📧 Email: juancarlosfdzgarcode@gmail.com
+💼 LinkedIn: [Mi Perfil.](https://www.linkedin.com/in/juan-carlos-fdz/)
+🐙 GitHub: [Mi GitHub.](https://github.com/juancarlosfdzcode)
 
-
-⭐ ¡Si te gusta este proyecto, dale una estrella! ⭐
-🌆 Sevilla Smart City IoT - Monitoring the future, today!
+###### ⭐ ¡Si te gusta este proyecto, dale una estrella! ⭐
