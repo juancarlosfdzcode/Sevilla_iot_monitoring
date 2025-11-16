@@ -84,12 +84,12 @@ docker compose up clickhouse-init
 
 **2. ¡Listo! Acceder al dashboard.**
 
-📊 Dashboard Principal: http://localhost:5000
-📡 API en tiempo real: http://localhost:5000/api/live-data
+📊 Dashboard Principal: http://localhost:5000 \
+📡 API en tiempo real: http://localhost:5000/api/live-data \
 🔧 Health Check: http://localhost:5000/health
 
 
-⏱️ Nota: El sistema tarda ~3 minutos en estar completamente operativo debido a los tiempos de inicialización de Kafka.
+`⏱️ Nota: El sistema tarda ~3 minutos en estar completamente operativo debido a los tiempos de inicialización de Kafka.`
 
 ## 🎯 Servicios Incluidos.
 
@@ -343,8 +343,8 @@ El sistema genera automáticamente datos realistas para Sevilla:
 
 Juan Carlos - Analytics Engineer.
 
-📧 Email: juancarlosfdzgarcode@gmail.com
-💼 LinkedIn: [Mi Perfil.](https://www.linkedin.com/in/juan-carlos-fdz/)
+📧 Email: juancarlosfdzgarcode@gmail.com \
+💼 LinkedIn: [Mi Perfil.](https://www.linkedin.com/in/juan-carlos-fdz/) \
 🐙 GitHub: [Mi GitHub.](https://github.com/juancarlosfdzcode)
 
-###### ⭐ ¡Si te gusta este proyecto, dale una estrella! ⭐
+##### ⭐ ¡Si te gusta este proyecto, dale una estrella! ⭐
