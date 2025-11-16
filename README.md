@@ -2,6 +2,12 @@
 
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
+![Kafka](https://img.shields.io/badge/Apache%20Kafka-orange)
+![ClickHouse](https://img.shields.io/badge/ClickHouse-yellow)
+![Flask](https://img.shields.io/badge/Flask-green)
+![IoT](https://img.shields.io/badge/IoT-lightblue)
+![Real-time](https://img.shields.io/badge/Real--time-red)
+
 
 En este proyecto se desarrolla un sistema completo de monitoreo de sensores IoT en tiempo real para la ciudad de Sevilla, implementando una arquitectura de microservicios con streaming de datos y análisis en tiempo real.
 
