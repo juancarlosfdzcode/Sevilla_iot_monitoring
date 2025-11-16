@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  sensors:
+    build: .
+    container_name: sevilla-sensors
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - SENSOR_INTERVAL=10
+      - CICLOS=10
