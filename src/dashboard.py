@@ -7,17 +7,18 @@ from clickhouse_driver import Client
 from datetime import datetime, timedelta
 import json
 from typing import Dict, List, Any
+import os
 
 app = Flask(__name__)
 
 class SevillaDashboard:
     def __init__(self):
         self.clickhouse_client = Client(
-            host='localhost',
-            port=9000,
-            user='admin',
-            password='admin123',
-            database='sensors_db'
+        host=os.getenv('CLICKHOUSE_HOST', 'localhost'),
+        port=int(os.getenv('CLICKHOUSE_PORT', '9000')),
+        user=os.getenv('CLICKHOUSE_USER', 'admin'),
+        password=os.getenv('CLICKHOUSE_PASSWORD', 'admin123'),
+        database='sensors_db'
         )
     
     def get_latest_readings(self) -> List[Dict[str, Any]]:

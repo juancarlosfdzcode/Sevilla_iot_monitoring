@@ -35,7 +35,10 @@ class KafkaClickHouseConsumer:
                 value_deserializer=lambda m: json.loads(m.decode('utf-8')),
                 key_deserializer=lambda m: m.decode('utf-8') if m else None,
                 group_id='clickhouse-consumer-group',
-                auto_offset_reset='latest'
+                auto_offset_reset='latest',
+                api_version=(2, 0, 2),
+                request_timeout_ms=60000,
+                connections_max_idle_ms=300000
             )
             print(f"✅ Conectado a Kafka: {self.kafka_broker}")
             return True
