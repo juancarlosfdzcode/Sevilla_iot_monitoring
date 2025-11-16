@@ -7,6 +7,8 @@ En este proyecto se desarrolla un sistema completo de monitoreo de sensores IoT 
 
 ## 🏗️ Arquitectura del Sistema.
 
+
+```
 ┌─────────────────┐    ┌──────────────┐    ┌────────────────┐    ┌─────────────────┐
 │   Sensores IoT  │───▶│ Apache Kafka │───▶│ Kafka Consumer │───▶│ ClickHouse DB   │
 │                 │    │              │    │                │    │                 │
@@ -25,6 +27,8 @@ En este proyecto se desarrolla un sistema completo de monitoreo de sensores IoT 
                                                                   │ • Auto-refresh  │
                                                                   │ • Métricas      │
                                                                   └─────────────────┘
+```
+
 
 ## ✨ Características Principales.
 
