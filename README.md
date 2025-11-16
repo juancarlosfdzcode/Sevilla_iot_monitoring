@@ -57,7 +57,7 @@ En este proyecto se desarrolla un sistema completo de monitoreo de sensores IoT 
 
 **Verificar prerequisitos:**
 
-```
+```bash
 bashdocker --version          # Debería mostrar >= 20.0
 docker compose version    # Debería mostrar >= 2.0
 ```
