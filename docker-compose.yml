@@ -34,6 +34,53 @@ services:
       timeout: 5s
       retries: 5
 
+  # spark-master:
+  #   image: bitnami/spark:latest
+  #   container_name: spark-master
+  #   environment:
+  #     - SPARK_MODE=master
+  #   ports:
+  #     - "8081:8080"
+  #     - "7077:7077"
+  #   volumes:
+  #     - ./spark_jobs:/opt/bitnami/spark/jobs
+
+  # spark-worker:
+  #   image: bitnami/spark:latest
+  #   container_name: spark-worker
+  #   environment:
+  #     - SPARK_MODE=worker
+  #   depends_on:
+  #     - spark-master
+  #   volumes:
+  #     - ./spark_jobs:/opt/bitnami/spark/jobs
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.8-alpine
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_DB: sensors_db
+      CLICKHOUSE_USER: admin
+      CLICKHOUSE_PASSWORD: admin123
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+  clickhouse-init:
+    build: .
+    container_name: clickhouse-init
+    depends_on:
+      - clickhouse
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      - ./src:/app/src
+    command: python src/init_database.py
+    restart: "no"
+
   sensors:
     build: .
     container_name: sevilla-sensors
@@ -48,3 +95,6 @@ services:
       - KAFKA_BROKER=kafka:29092
       - TOPIC_NAME=sevilla-sensors
       - SENSOR_INTERVAL=10
+
+volumes:
+  clickhouse_data:

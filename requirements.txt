@@ -1,2 +1,4 @@
 typing-extensions>=4.0.0
 kafka-python==2.0.2
+clickhouse-driver==0.2.6
+flask==3.0.0

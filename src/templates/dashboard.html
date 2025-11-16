@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌆 Sevilla IoT Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 { 
+            color: #2c3e50; 
+            margin-bottom: 0.5rem;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+        
+        .header p { 
+            color: #7f8c8d; 
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+        }
+        
+        .stat-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .stat-value {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label { 
+            color: #7f8c8d;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .zones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .zone-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .zone-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .zone-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .zone-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .metric:hover {
+            background: #e9ecef;
+            transform: scale(1.05);
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .readings-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .readings-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .readings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .readings-table th,
+        .readings-table td {
+            padding: 1rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .readings-table th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .readings-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .auto-refresh {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.8rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            color: #27ae60;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+        }
+        
+        .temp { color: #e74c3c; }
+        .humidity { color: #3498db; }
+        .noise { color: #f39c12; }
+        .aqi { color: #9b59b6; }
+        .traffic { color: #e67e22; }
+        
+        .zone-location { font-size: 0.8rem; color: #95a5a6; margin-top: 1rem; text-align: center; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #27ae60;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌆 Sevilla IoT Monitoring Dashboard</h1>
+        <p><span class="live-indicator"></span>Sistema de monitoreo en tiempo real - Centro, Triana, Parque María Luisa, Nervión</p>
+    </div>
+    
+    <div class="auto-refresh" id="lastUpdate">
+        ⟳ Actualizando...
+    </div>
+    
+    <div class="container">
+        <!-- Estadísticas generales -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total_readings }}</div>
+                <div class="stat-label">Total Lecturas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.active_sensors }}</div>
+                <div class="stat-label">Sensores Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.max_temp }}°C</div>
+                <div class="stat-label">Temp Máxima (1h)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.avg_temp }}°C</div>
+                <div class="stat-label">Temp Promedio (1h)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.min_temp }}°C</div>
+                <div class="stat-label">Temp Mínima (1h)</div>
+            </div>
+        </div>
+        
+        <!-- Métricas por zona -->
+        <div class="zones-grid">
+            {% for zone, metrics in zones.items() %}
+            <div class="zone-card">
+                <div class="zone-title">📍 {{ zone }}</div>
+                <div class="zone-metrics">
+                    <div class="metric">
+                        <div class="metric-value temp">{{ metrics.temperatura }}°C</div>
+                        <div class="metric-label">Temperatura</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value humidity">{{ metrics.humedad }}%</div>
+                        <div class="metric-label">Humedad</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value noise">{{ metrics.ruido }}dB</div>
+                        <div class="metric-label">Ruido</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value aqi">{{ metrics.aqi }}/5</div>
+                        <div class="metric-label">Calidad Aire</div>
+                    </div>
+                </div>
+                <div class="zone-location">{{ metrics.lecturas }} lecturas en la última hora</div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Lecturas recientes -->
+        <div class="readings-section">
+            <div class="readings-title">📊 Lecturas en tiempo real</div>
+            <table class="readings-table">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Sensor</th>
+                        <th>Ubicación</th>
+                        <th>Temp</th>
+                        <th>Humedad</th>
+                        <th>AQI</th>
+                        <th>Ruido</th>
+                        <th>Tráfico</th>
+                    </tr>
+                </thead>
+                <tbody id="readings-tbody">
+                    {% for reading in readings %}
+                    <tr>
+                        <td>{{ reading.timestamp }}</td>
+                        <td>{{ reading.sensor_id }}</td>
+                        <td>{{ reading.ubicacion }}</td>
+                        <td class="temp">{{ reading.temperatura }}°C</td>
+                        <td class="humidity">{{ reading.humedad }}%</td>
+                        <td class="aqi">{{ reading.calidad_aire }}/5</td>
+                        <td class="noise">{{ reading.ruido_db }}dB</td>
+                        <td class="traffic">{{ reading.trafico_nivel }}/5</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-refresh cada 15 segundos
+        function updateDashboard() {
+            fetch('/api/live-data')
+                .then(response => response.json())
+                .then(data => {
+                    // Actualizar timestamp
+                    document.getElementById('lastUpdate').textContent = `⟳ Último update: ${data.timestamp}`;
+                    
+                    // Actualizar tabla de lecturas
+                    const tbody = document.getElementById('readings-tbody');
+                    tbody.innerHTML = '';
+                    
+                    data.latest.forEach(reading => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${reading.timestamp}</td>
+                            <td>${reading.sensor_id}</td>
+                            <td>${reading.ubicacion}</td>
+                            <td class="temp">${reading.temperatura}°C</td>
+                            <td class="humidity">${reading.humedad}%</td>
+                            <td class="aqi">${reading.calidad_aire}/5</td>
+                            <td class="noise">${reading.ruido_db}dB</td>
+                            <td class="traffic">${reading.trafico_nivel}/5</td>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.log('Error actualizando:', error);
+                    document.getElementById('lastUpdate').textContent = '⚠️ Error de conexión';
+                });
+        }
+        
+        // Actualizar cada 15 segundos
+        setInterval(updateDashboard, 15000);
+        
+        // Primera actualización después de 3 segundos
+        setTimeout(updateDashboard, 3000);
+    </script>
+</body>
+</html>
