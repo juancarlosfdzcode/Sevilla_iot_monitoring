@@ -1,7 +1,12 @@
-# 🌆 Sevilla IoT Monitoring System
+# 🌆 Sevilla IoT Monitoring System.
 
-Sistema completo de monitoreo IoT en tiempo real para la ciudad de Sevilla, implementando una arquitectura de microservicios con streaming de datos y análisis en tiempo real.
-🏗️ Arquitectura del Sistema
+![Python](https://img.shields.io/badge/python-3.11-blue)
+![Docker](https://img.shields.io/badge/docker-ready-blue)
+
+En este proyecto se desarrolla un sistema completo de monitoreo de sensores IoT en tiempo real para la ciudad de Sevilla, implementando una arquitectura de microservicios con streaming de datos y análisis en tiempo real.
+
+## 🏗️ Arquitectura del Sistema.
+
 ┌─────────────────┐    ┌──────────────┐    ┌────────────────┐    ┌─────────────────┐
 │   Sensores IoT  │───▶│ Apache Kafka │───▶│ Kafka Consumer │───▶│ ClickHouse DB   │
 │                 │    │              │    │                │    │                 │
@@ -20,30 +25,43 @@ Sistema completo de monitoreo IoT en tiempo real para la ciudad de Sevilla, impl
                                                                   │ • Auto-refresh  │
                                                                   │ • Métricas      │
                                                                   └─────────────────┘
-✨ Características Principales
 
-🔌 4 Sensores IoT simulados con datos realistas de Sevilla
-📡 Streaming en tiempo real con Apache Kafka
-🗄️ Base de datos analítica ultra-rápida (ClickHouse)
-📊 Dashboard web con visualización en tiempo real
-🐳 Completamente containerizado con Docker
-⚡ Auto-refresh cada 15 segundos
-📈 Métricas por zona (Centro, Triana, Parque María Luisa, Nervión)
-🔄 Procesamiento ETL automático con consumer Python
-🚀 Despliegue con un solo comando
+## ✨ Características Principales.
 
-📊 Métricas Monitoreadas
-MétricaDescripciónRango🌡️ TemperaturaTemperatura ambiente por zona15°C - 35°C💧 HumedadPorcentaje de humedad relativa40% - 80%🌬️ Calidad del AireÍndice de calidad del aire (AQI)1-4 (1=Bueno, 4=Malo)🔊 RuidoNivel de ruido ambiental40-75 dB🚗 TráficoNivel de tráfico vehicular1-5 (1=Bajo, 5=Alto)
-📋 Prerequisitos
+* 4 Sensores IoT simulados con datos realistas de Sevilla.
+* Streaming en tiempo real con Apache Kafka.
+* Base de datos analítica ultra-rápida (ClickHouse).
+* Dashboard web con visualización en tiempo real.
+* Completamente containerizado con Docker.
+* Auto-refresh cada 15 segundos.
+* Métricas por zona (Centro, Triana, Parque María Luisa, Nervión).
+* Procesamiento ETL automático con consumer Python.
+* Despliegue con un solo comando.
 
-Docker >= 20.0 y Docker Compose >= 2.0
-Git para clonar el repositorio
-4GB RAM mínimo recomendado
-Puerto 5000 libre para el dashboard web
+## 📊 Métricas Monitoreadas.
 
-Verificar prerequisitos:
+| Métrica | Descripción | Rango |
+|----------|----------|----------|
+| Temperatura | Temperatura ambiente por zonas | 15ºC - 35ºC |
+| Humedad | Porcentaje de humedad relativa | 40% - 80% |
+| Calidad del aire | Índice de calidad del aire (AQI) | 1-4 (1=Bueno, 4=Malo) |
+| Ruido | Nivel de ruido ambiental | 40-75 dB |
+| Tráfico | Nivel de tráfico vehicular | 1-5 (1=Bajo, 5=Alto) |
+
+## 📋 Prerequisitos.
+
+* Docker >= 20.0 y Docker Compose >= 2.0
+* Git para clonar el repositorio
+* 4GB RAM mínimo recomendado
+* Puerto 5000 libre para el dashboard web
+
+**Verificar prerequisitos:**
+
+```
 bashdocker --version          # Debería mostrar >= 20.0
 docker compose version    # Debería mostrar >= 2.0
+```
+
 🚀 Instalación Ultra-Rápida
 1. Clonar y ejecutar
 bash# Clonar repositorio
