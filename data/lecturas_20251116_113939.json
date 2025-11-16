@@ -1,0 +1,62 @@
+[
+  {
+    "sensor_id": "SEV-CENTRO-001",
+    "ubicacion": "Centro Histórico",
+    "coordenadas": {
+      "lat": 37.3886,
+      "lon": -5.9823
+    },
+    "datos": {
+      "temperatura": 22.6,
+      "humedad": 54,
+      "calidad_aire": 4,
+      "ruido_db": 48
+    },
+    "timestamp": "2025-11-16T11:39:39.484734"
+  },
+  {
+    "sensor_id": "SEV-TRIANA-002",
+    "ubicacion": "Triana",
+    "coordenadas": {
+      "lat": 37.3838,
+      "lon": -6.0021
+    },
+    "datos": {
+      "temperatura": 19.7,
+      "humedad": 60,
+      "calidad_aire": 1,
+      "ruido_db": 63
+    },
+    "timestamp": "2025-11-16T11:39:39.484864"
+  },
+  {
+    "sensor_id": "SEV-PARQUE-003",
+    "ubicacion": "Parque María Luisa",
+    "coordenadas": {
+      "lat": 37.3721,
+      "lon": -5.9874
+    },
+    "datos": {
+      "temperatura": 25.7,
+      "humedad": 64,
+      "calidad_aire": 3,
+      "ruido_db": 53
+    },
+    "timestamp": "2025-11-16T11:39:39.484901"
+  },
+  {
+    "sensor_id": "SEV-NERVION-004",
+    "ubicacion": "Nervión",
+    "coordenadas": {
+      "lat": 37.3829,
+      "lon": -5.9732
+    },
+    "datos": {
+      "temperatura": 30.9,
+      "humedad": 70,
+      "calidad_aire": 3,
+      "ruido_db": 47
+    },
+    "timestamp": "2025-11-16T11:39:39.484938"
+  }
+]
