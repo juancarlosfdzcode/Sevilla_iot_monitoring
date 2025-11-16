@@ -29,78 +29,74 @@ Sistema completo de monitoreo IoT en tiempo real para la ciudad de Sevilla, impl
 ⚡ Auto-refresh cada 15 segundos
 📈 Métricas por zona (Centro, Triana, Parque María Luisa, Nervión)
 🔄 Procesamiento ETL automático con consumer Python
+🚀 Despliegue con un solo comando
 
 📊 Métricas Monitoreadas
 MétricaDescripciónRango🌡️ TemperaturaTemperatura ambiente por zona15°C - 35°C💧 HumedadPorcentaje de humedad relativa40% - 80%🌬️ Calidad del AireÍndice de calidad del aire (AQI)1-4 (1=Bueno, 4=Malo)🔊 RuidoNivel de ruido ambiental40-75 dB🚗 TráficoNivel de tráfico vehicular1-5 (1=Bajo, 5=Alto)
 📋 Prerequisitos
 
 Docker >= 20.0 y Docker Compose >= 2.0
-Python 3.10+ para desarrollo local
 Git para clonar el repositorio
 4GB RAM mínimo recomendado
+Puerto 5000 libre para el dashboard web
 
 Verificar prerequisitos:
 bashdocker --version          # Debería mostrar >= 20.0
-docker compose version    # Debería mostrar >= 2.0  
-python3 --version         # Debería mostrar >= 3.10
-🚀 Instalación Rápida
-1. Clonar y preparar
-bashgit clone https://github.com/tu-usuario/sevilla-iot-monitoring.git
+docker compose version    # Debería mostrar >= 2.0
+🚀 Instalación Ultra-Rápida
+1. Clonar y ejecutar
+bash# Clonar repositorio
+git clone https://github.com/tu-usuario/sevilla-iot-monitoring.git
 cd sevilla-iot-monitoring
-2. Ejecutar sistema completo
-bash# Iniciar todos los servicios
+
+# Ejecutar sistema completo con un solo comando
 docker compose up -d
 
 # Inicializar base de datos (solo primera vez)
 docker compose up clickhouse-init
-
-# Ver estado de servicios
-docker compose ps
-3. Acceder al dashboard
+2. ¡Listo! Acceder al dashboard
 
 📊 Dashboard Principal: http://localhost:5000
 📡 API en tiempo real: http://localhost:5000/api/live-data
 🔧 Health Check: http://localhost:5000/health
 
-🛠️ Uso Detallado
-Iniciar Sistema Paso a Paso
-bash# 1. Iniciar infraestructura base
-docker compose up -d zookeeper kafka clickhouse
 
-# 2. Esperar que estén listos (30-60 segundos)
-sleep 45
+⏱️ Nota: El sistema tarda ~3 minutos en estar completamente operativo debido a los tiempos de inicialización de Kafka.
 
-# 3. Verificar conectividad
-curl http://localhost:8123/ping  # ClickHouse
-docker exec kafka kafka-topics --bootstrap-server kafka:29092 --list  # Kafka
+🎯 Servicios Incluidos
+El sistema incluye 6 servicios automáticos:
+ServicioDescripciónPuertosensors4 sensores IoT generando datos-kafka + zookeeperStreaming de datos en tiempo real9092kafka-consumerProcesamiento ETL automático-clickhouseBase de datos analítica8123, 9000dashboardInterface web con visualización5000clickhouse-initInicializador de BD (ejecuta una vez)-
+🛠️ Comandos Útiles
+Gestión del Sistema
+bash# Ver estado de todos los servicios
+docker compose ps
 
-# 4. Inicializar base de datos
-docker compose up clickhouse-init
+# Ver logs de un servicio específico
+docker compose logs -f sensors
+docker compose logs -f kafka-consumer
+docker compose logs -f dashboard
 
-# 5. Iniciar sensores
-docker compose up -d sensors
+# Reiniciar el sistema completo
+docker compose down
+docker compose up -d
 
-# 6. Ver datos fluyendo en Kafka
+# Parar sistema
+docker compose down
+
+# Limpiar todo (incluyendo datos)
+docker compose down -v
+docker system prune -f
+Verificación de Datos
+bash# Ver datos en Kafka en tiempo real
 docker exec kafka kafka-console-consumer --bootstrap-server kafka:29092 --topic sevilla-sensors --from-beginning
-Ejecutar Consumer Local (Desarrollo)
-bash# Instalar dependencias Python
-pip3 install kafka-python clickhouse-driver flask
 
-# Ejecutar consumer Kafka→ClickHouse
-python src/kafka_to_clickhouse.py
-
-# En otra terminal, ejecutar dashboard
-python src/dashboard.py
-Verificar Datos en ClickHouse
-bash# Conectar al cliente ClickHouse
+# Conectar a ClickHouse y consultar datos
 docker exec -it clickhouse clickhouse-client --user admin --password admin123
 
-# Consultas útiles:
+# Dentro del cliente ClickHouse:
 USE sensors_db;
-SHOW TABLES;
 SELECT COUNT(*) FROM sensor_data;
 SELECT * FROM sensor_data ORDER BY timestamp DESC LIMIT 10;
-SELECT ubicacion, round(avg(temperatura),1) FROM sensor_data GROUP BY ubicacion;
 ```
 
 ## 📁 Estructura del Proyecto
@@ -108,26 +104,26 @@ SELECT ubicacion, round(avg(temperatura),1) FROM sensor_data GROUP BY ubicacion;
 sevilla-iot-monitoring/
 ├── 📂 src/
 │   ├── 🔌 sensor_kafka.py           # Sensores IoT con Kafka
-│   ├── 🔗 kafka_to_clickhouse.py    # Consumer Kafka→ClickHouse  
+│   ├── 🔗 kafka_to_clickhouse.py    # Consumer automático Kafka→ClickHouse  
 │   ├── 📊 dashboard.py              # Dashboard web Flask
 │   └── ⚙️ init_database.py          # Inicializador ClickHouse
 ├── 📂 templates/
-│   └── 🎨 dashboard.html            # Template del dashboard
+│   └── 🎨 dashboard.html            # Template del dashboard web
 ├── 📂 data/                         # Datos generados (git ignored)
-├── 🐳 docker-compose.yml            # Orquestación de servicios
-├── 🐳 Dockerfile                    # Imagen de sensores
+├── 🐳 docker-compose.yml            # Orquestación completa de servicios
+├── 🐳 Dockerfile                    # Imagen base de Python
 ├── 📋 requirements.txt              # Dependencias Python
 ├── 🚫 .gitignore                    # Archivos ignorados por Git
 └── 📖 README.md                     # Este archivo
 🔧 Configuración
-Variables de Entorno
-VariableDescripciónValor por defectoKAFKA_BROKERServidor Kafkakafka:29092TOPIC_NAMENombre del topicsevilla-sensorsSENSOR_INTERVALIntervalo entre lecturas10 segundosCLICKHOUSE_HOSTHost de ClickHouselocalhostCLICKHOUSE_USERUsuario ClickHouseadminCLICKHOUSE_PASSWORDPassword ClickHouseadmin123
+Variables de Entorno (Automáticas)
+VariableDescripciónValor configuradoKAFKA_BROKERServidor Kafka internokafka:29092TOPIC_NAMENombre del topicsevilla-sensorsSENSOR_INTERVALIntervalo entre lecturas10 segundosCLICKHOUSE_HOSTHost de ClickHouse internoclickhouseCLICKHOUSE_USERUsuario ClickHouseadminCLICKHOUSE_PASSWORDPassword ClickHouseadmin123
 Puertos Utilizados
-ServicioPuertoDescripciónKafka9092Puerto principal para productores/consumidoresZookeeper2181Coordinación de KafkaClickHouse HTTP8123Interface HTTP de ClickHouseClickHouse Native9000Cliente nativo de ClickHouseDashboard5000Interface web del dashboard
+ServicioPuertoDescripciónDashboard5000Interface web principalKafka9092Puerto para productores/consumidoresClickHouse HTTP8123Interface HTTP de ClickHouseClickHouse Native9000Cliente nativo de ClickHouseZookeeper2181Coordinación de Kafka
 📈 API Endpoints
 Dashboard Web
 
-GET / - Dashboard principal con visualización
+GET / - Dashboard principal con visualización en tiempo real
 GET /health - Health check del servicio
 GET /api/live-data - Datos en tiempo real (JSON)
 
@@ -159,103 +155,86 @@ docker ps
 # Reiniciar servicios
 docker compose down
 docker compose up -d
-❌ Error: "No module named kafka"
-bash# Instalar dependencias locales
-pip3 install -r requirements.txt
-❌ Dashboard muestra error 500
-bash# Verificar que ClickHouse está funcionando
-curl http://localhost:8123/ping
+❌ Dashboard no carga (Puerto 5000 en uso)
+bash# Verificar qué usa el puerto
+lsof -i :5000
 
-# Ver logs del dashboard
-docker compose logs sensors
-❌ No se ven datos en ClickHouse
-bash# Verificar que los sensores están enviando datos
-docker compose logs sensors
-
-# Verificar consumer
-python src/kafka_to_clickhouse.py
-Comandos de Diagnóstico
-bash# Ver estado de todos los servicios
+# Cerrar proceso que use el puerto y reiniciar
+docker compose restart dashboard
+❌ No se ven datos nuevos en el dashboard
+bash# Verificar que todos los servicios están corriendo
 docker compose ps
 
-# Ver logs de un servicio específico
-docker compose logs -f sensors
+# Verificar logs del consumer
+docker compose logs kafka-consumer
 
-# Verificar recursos del sistema
-docker stats
+# Verificar datos en ClickHouse
+docker exec -it clickhouse clickhouse-client --user admin --password admin123 --query "SELECT COUNT(*) FROM sensors_db.sensor_data"
+❌ Error "NoBrokersAvailable"
+bash# Kafka necesita más tiempo para inicializar
+# Esperar 3-5 minutos y verificar logs:
+docker compose logs kafka
+Comandos de Diagnóstico Completo
+bash# Diagnóstico automático del sistema
+echo "=== ESTADO SERVICIOS ==="
+docker compose ps
 
-# Limpiar todo y empezar de cero
-docker compose down
-docker system prune -f
-docker compose up -d
+echo "=== DATOS EN KAFKA ==="
+timeout 5s docker exec kafka kafka-console-consumer --bootstrap-server kafka:29092 --topic sevilla-sensors --from-beginning | wc -l
+
+echo "=== DATOS EN CLICKHOUSE ==="
+docker exec clickhouse clickhouse-client --user admin --password admin123 --query "SELECT COUNT(*) FROM sensors_db.sensor_data"
+
+echo "=== ÚLTIMO REGISTRO ==="
+docker exec clickhouse clickhouse-client --user admin --password admin123 --query "SELECT sensor_id, temperatura, timestamp FROM sensors_db.sensor_data ORDER BY timestamp DESC LIMIT 1"
+
+echo "=== API DASHBOARD ==="
+curl -s http://localhost:5000/health | jq
 🧪 Testing
-Tests Básicos
-bash# 1. Test de conectividad
-curl http://localhost:8123/ping  # Debería devolver "Ok"
-curl http://localhost:5000/health  # Debería devolver JSON con status ok
+Tests de Conectividad
+bash# 1. Test servicios básicos
+curl http://localhost:8123/ping  # ClickHouse: debería devolver "Ok"
+curl http://localhost:5000/health  # Dashboard: debería devolver JSON
 
 # 2. Test de datos
-docker exec -it clickhouse clickhouse-client --user admin --password admin123 --query "SELECT COUNT(*) FROM sensors_db.sensor_data"
+docker exec kafka kafka-topics --list --bootstrap-server kafka:29092  # Debería mostrar "sevilla-sensors"
 
-# 3. Test de Kafka
-docker exec kafka kafka-console-consumer --bootstrap-server kafka:29092 --topic sevilla-sensors --max-messages 5
-Datos de Prueba
-El sistema genera automáticamente datos realistas:
+# 3. Test de flujo completo
+curl http://localhost:5000/api/live-data | jq '.stats.total_readings'  # Debería mostrar número > 0
+Datos de Prueba Automáticos
+El sistema genera automáticamente datos realistas para Sevilla:
 
-Temperatura: Varía por zona (Centro más caluroso, Parque más fresco)
-Humedad: Correlacionada con proximidad al río (Triana más húmedo)
-Calidad del aire: Simulación realista para Sevilla
-Ruido: Basado en características urbanas de cada zona
-Tráfico: Patrones realistas por ubicación
+Centro Histórico: Temperaturas más altas, más ruido urbano
+Triana: Humedad más alta (proximidad al río Guadalquivir)
+Parque María Luisa: Temperaturas más frescas, menos ruido
+Nervión: Características urbanas intermedias
 
 🚀 Tecnologías Utilizadas
-Backend
+Backend & Data Engineering
 
 Python 3.11 - Lenguaje principal
 Apache Kafka - Streaming de datos en tiempo real
 ClickHouse - Base de datos analítica columnar
-Flask - Framework web para dashboard
+Flask - Framework web para dashboard y API
 
 DevOps & Infraestructura
 
-Docker & Docker Compose - Containerización
+Docker & Docker Compose - Containerización y orquestación
 Zookeeper - Coordinación de Kafka
 
-Frontend
+Frontend & Visualización
 
 HTML5 + CSS3 - Dashboard web responsive
-JavaScript - Auto-refresh y interactividad
+JavaScript - Auto-refresh y interactividad en tiempo real
 
-🚀 Despliegue en Producción
-Consideraciones
+🌟 Características Avanzadas
 
-Seguridad:
+Auto-healing: Servicios se reinician automáticamente en caso de fallo
+Scalable: Arquitectura preparada para múltiples instancias
+Real-time: Dashboard se actualiza automáticamente cada 15 segundos
+Enterprise-ready: Logs estructurados, health checks, métricas
+Development-friendly: Sistema completo en desarrollo local
 
-Cambiar contraseñas por defecto
-Configurar SSL/TLS
-Implementar autenticación
-
-
-Escalabilidad:
-
-Usar múltiples workers de Kafka
-Configurar particiones apropiadas
-Implementar load balancing
-
-
-Monitoreo:
-
-Añadir métricas de Prometheus
-Configurar alertas
-Logs estructurados
-
-
-
-Variables de Entorno para Producción
-bashexport KAFKA_BROKER="production-kafka:9092"
-export CLICKHOUSE_HOST="production-clickhouse"
-export CLICKHOUSE_PASSWORD="secure-password"
-export FLASK_ENV="production"
 🤝 Contribución
 
 Fork del proyecto
