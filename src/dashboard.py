@@ -22,7 +22,10 @@ class SevillaDashboard:
         )
     
     def get_latest_readings(self) -> List[Dict[str, Any]]:
-        """Obtener últimas lecturas de cada sensor"""
+        """
+        Obtener últimas lecturas de cada sensor.
+        """
+
         query = """
         SELECT sensor_id, ubicacion, temperatura, humedad, 
                calidad_aire, ruido_db, trafico_nivel, timestamp
@@ -48,7 +51,10 @@ class SevillaDashboard:
         ]
     
     def get_zone_averages(self) -> Dict[str, Dict[str, float]]:
-        """Promedios por zona en la última hora"""
+        """
+        Promedios por zona en la última hora.
+        """
+
         query = """
         SELECT ubicacion,
                round(avg(temperatura), 1) as temp_avg,
@@ -75,7 +81,10 @@ class SevillaDashboard:
         }
     
     def get_hourly_trends(self) -> Dict[str, List]:
-        """Tendencias por hora en las últimas 6 horas"""
+        """
+        Tendencias por hora en las últimas 6 horas.
+        """
+
         query = """
         SELECT toStartOfHour(timestamp) as hour,
                ubicacion,
@@ -88,7 +97,6 @@ class SevillaDashboard:
         
         result = self.clickhouse_client.execute(query)
         
-        # Organizar datos para gráfico
         trends = {}
         for row in result:
             hour = row[0].strftime('%H:%M')
@@ -104,7 +112,10 @@ class SevillaDashboard:
         return trends
     
     def get_stats_summary(self) -> Dict[str, Any]:
-        """Estadísticas generales"""
+        """
+        Estadísticas generales.
+        """
+
         queries = {
             'total_readings': "SELECT count() FROM sensor_data",
             'active_sensors': "SELECT count(DISTINCT sensor_id) FROM sensor_data WHERE timestamp > now() - INTERVAL 10 MINUTE",
@@ -120,12 +131,14 @@ class SevillaDashboard:
         
         return stats
 
-# Instancia del dashboard
 dashboard = SevillaDashboard()
 
 @app.route('/')
 def index():
-    """Página principal del dashboard"""
+    """
+    Página principal del dashboard.
+    """
+
     try:
         stats = dashboard.get_stats_summary()
         zone_averages = dashboard.get_zone_averages()
@@ -140,7 +153,10 @@ def index():
 
 @app.route('/api/live-data')
 def live_data():
-    """API para datos en tiempo real"""
+    """
+    API para datos en tiempo real.
+    """
+
     try:
         return jsonify({
             'stats': dashboard.get_stats_summary(),
@@ -154,7 +170,10 @@ def live_data():
 
 @app.route('/health')
 def health():
-    """Health check"""
+    """
+    Health check.
+    """
+    
     return jsonify({'status': 'ok', 'timestamp': datetime.now().strftime('%H:%M:%S')})
 
 if __name__ == '__main__':
